@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
+use App\Http\Resources\InvoiceCollection;
 use App\Models\Invoice;
 
 class InvoiceController extends Controller
@@ -11,9 +12,10 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): InvoiceCollection
     {
-        //
+        $invoices = Invoice::all();
+        return new InvoiceCollection($invoices);
     }
 
     /**
