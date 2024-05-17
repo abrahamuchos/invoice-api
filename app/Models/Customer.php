@@ -7,21 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
  *
- * @property int $id
- * @property string $name
- * @property string $type
- * @property string $email
- * @property string $address
- * @property string $city
- * @property string $state
- * @property string $country
- * @property string $postal_code
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ *
+ * @property int                                                                     $id
+ * @property string                                                                  $name
+ * @property string                                                                  $type
+ * @property string                                                                  $email
+ * @property string                                                                  $address
+ * @property string                                                                  $city
+ * @property string                                                                  $state
+ * @property string                                                                  $country
+ * @property string                                                                  $postal_code
+ * @property \Illuminate\Support\Carbon|null                                         $created_at
+ * @property \Illuminate\Support\Carbon|null                                         $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
- * @property-read int|null $invoices_count
+ * @property-read int|null                                                           $invoices_count
  * @method static \Database\Factories\CustomerFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Customer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Customer newQuery()
@@ -42,8 +42,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Customer extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        ''
+        'name',
+        'type',
+        'email',
+        'address',
+        'city',
+        'state',
+        'country',
+        'postal_code',
     ];
 
     /**
@@ -51,10 +59,8 @@ class Customer extends Model
      */
     public function invoices(): HasMany
     {
-     return $this->hasMany(Invoice::class);
+        return $this->hasMany(Invoice::class);
     }
-
-
 
 
 }

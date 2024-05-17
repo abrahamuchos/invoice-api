@@ -7,19 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
  *
- * @property int $id
- * @property int $customer_id
- * @property int $invoice_number
- * @property string $uuid
- * @property float $amount
- * @property string $status
- * @property string $billed_dated
- * @property string|null $paid_dated
+ *
+ * @property int                             $id
+ * @property int                             $customer_id
+ * @property int                             $invoice_number
+ * @property string                          $uuid
+ * @property float                           $amount
+ * @property string                          $status
+ * @property string                          $billed_dated
+ * @property string|null                     $paid_dated
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Customer|null $customer
+ * @property-read \App\Models\Customer|null  $customer
  * @method static \Database\Factories\InvoiceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice newQuery()
@@ -39,8 +39,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Invoice extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-      ''
+        'customer_id',
+        'invoice_number',
+        'uuid',
+        'amount',
+        'status',
+        'billed_dated',
+        'paid_dated',
     ];
 
     /**
