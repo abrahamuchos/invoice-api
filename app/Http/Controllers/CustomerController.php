@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+use App\Http\Resources\CustomerCollection;
 use App\Models\Customer;
 
 class CustomerController extends Controller
@@ -11,9 +12,10 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): CustomerCollection
     {
-        //
+        $customers = Customer::paginate();
+        return new CustomerCollection($customers);
     }
 
     /**
