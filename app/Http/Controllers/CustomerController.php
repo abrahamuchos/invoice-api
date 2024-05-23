@@ -6,6 +6,7 @@ use App\Filters\CustomerFilter;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Resources\CustomerCollection;
+use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,7 @@ class CustomerController extends Controller
         $queryItems = $filter->transform($request);
         $customers = Customer::where($queryItems);
 
-        if($request->query('includeInvoices')){
+        if ($request->query('includeInvoices')) {
             $customers = $customers->with('invoices');
         }
 
@@ -46,9 +47,15 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Customer $customer)
+    public function show(Customer $customer): CustomerResource
     {
-        //
+
+        if (request()->query('includeInvoices')) {
+            return new CustomerResource($customer->loadMissing('invoices'));
+        } else {
+            return new CustomerResource($customer);
+        }
+
     }
 
     /**
