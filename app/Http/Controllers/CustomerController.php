@@ -14,14 +14,15 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): CustomerCollection
     {
         $filter = new CustomerFilter();
         $queryItems = $filter->transform($request);
-//        return $queryItems;
         $customers = Customer::where($queryItems);
-//        $customers = Customer::where([["type","=","I"]]);
 
+        if($request->query('includeInvoices')){
+            $customers = $customers->with('invoices');
+        }
 
         return new CustomerCollection($customers->paginate()->appends($request->query()));
     }

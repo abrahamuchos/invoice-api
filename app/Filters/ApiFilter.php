@@ -4,13 +4,15 @@ namespace App\Filters;
 
 use Illuminate\Http\Request;
 
-class ApiFilter{
+class ApiFilter
+{
 
     protected array $safeParams = [];
     protected array $columnMap = [];
     protected array $operatorMap = [];
 
     /**
+     * Transform request to where clausules
      * @param Request $request
      *
      * @return array

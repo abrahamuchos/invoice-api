@@ -16,7 +16,6 @@ class CustomerFilter extends ApiFilter {
         'state' => ['eq'],
         'country' => ['eq'],
         'postalCode' => ['eq', 'gt', 'lt'],
-
     ];
     protected array $columnMap = [
         'postalCode' => 'postal_code'
