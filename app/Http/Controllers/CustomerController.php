@@ -8,12 +8,16 @@ use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Resources\CustomerCollection;
 use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the customer.
+     * @param Request $request
+     *
+     * @return CustomerCollection
      */
     public function index(Request $request): CustomerCollection
     {
@@ -29,56 +33,85 @@ class CustomerController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created customer in storage
+     * @param StoreCustomerRequest $request
+     *
+     * @return JsonResponse|CustomerResource
      */
-    public function create()
+    public function store(StoreCustomerRequest $request): JsonResponse|CustomerResource
     {
-        //
+        try {
+            $customer = Customer::create($request->all());
+
+        } catch (\Exception $e){
+            return response()->json([
+                'error' => true,
+                'message' => 'Error store a customer',
+                'code' => 10100,
+                'details' => $e->getMessage()
+            ]);
+        }
+
+        return new CustomerResource($customer);
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCustomerRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
+     * Display the specified customer.
+     * @param Customer $customer
+     *
+     * @return CustomerResource
      */
     public function show(Customer $customer): CustomerResource
     {
-
         if (request()->query('includeInvoices')) {
             return new CustomerResource($customer->loadMissing('invoices'));
         } else {
             return new CustomerResource($customer);
         }
-
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update the customer resource in storage.
+     * @param UpdateCustomerRequest $request
+     * @param Customer              $customer
+     *
+     * @return JsonResponse
      */
-    public function edit(Customer $customer)
+    public function update(UpdateCustomerRequest $request, Customer $customer): JsonResponse
     {
-        //
+       $wasUpdated = $customer->update($request->all());
+
+       if($wasUpdated){
+           return response()->json();
+       }else{
+           return response()->json([
+               'error' => true,
+               'message' => 'Error update a customer',
+               'code' => 10200,
+               'details' => null
+           ]);
+       }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Remove the specified customer from storage.
+     * @param Customer $customer
+     *
+     * @return JsonResponse
      */
-    public function update(UpdateCustomerRequest $request, Customer $customer)
+    public function destroy(Customer $customer): JsonResponse
     {
-        //
-    }
+        $wasDeleted =  $customer->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Customer $customer)
-    {
-        //
+        if($wasDeleted){
+            return response()->json();
+        }else{
+            return response()->json([
+                'error' => true,
+                'message' => 'Error deleted a customer',
+                'code' => 10200,
+                'details' => null
+            ]);
+        }
     }
 }
