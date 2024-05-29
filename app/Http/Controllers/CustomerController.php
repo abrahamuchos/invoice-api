@@ -10,6 +10,7 @@ use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -101,6 +102,10 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer): JsonResponse
     {
+        if(! Auth::user()->tokenCan('delete')){
+            return response()->json([], 401);
+        }
+
         $wasDeleted =  $customer->delete();
 
         if($wasDeleted){
