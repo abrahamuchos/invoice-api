@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +26,9 @@ Route::group(['prefix' => 'v1'], function(){
     Route::post('login', [AuthController::class, 'login']);
 
     //Auth routes
-    Route::middleware('auth:sanctum', )->group(function(){
+    Route::middleware('auth:sanctum')->group(function(){
+
+        Route::apiResource('users', UserController::class)->middleware('admin');
 
         Route::apiResource('customers', CustomerController::class);
 
