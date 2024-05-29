@@ -36,6 +36,7 @@ class AuthController extends Controller
         }else{
             $token = $this->_createBasicToken($user);
         }
+        $this->_updateLastAccess($user);
 
         return response()->json([
             'id' => $user->id,
@@ -78,5 +79,18 @@ class AuthController extends Controller
     private function _createBasicToken(User $user): string
     {
         return $user->createToken('basic-token', ['create', 'update'])->plainTextToken;
+    }
+
+    /**
+     * Update user last access
+     * @param User $user
+     *
+     * @return void
+     */
+    private function _updateLastAccess(User $user): void
+    {
+        $user->update([
+            'last_access' => now()
+        ]);
     }
 }
