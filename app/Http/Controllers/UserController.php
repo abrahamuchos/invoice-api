@@ -37,16 +37,16 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): UserResource|JsonResponse
     {
-        try{
-           $user = User::create([
-               'name' => $request->input('name'),
-               'email' => $request->input('email'),
-               'password' => Hash::make($request->input('password')),
-               'is_admin' => $request->input('isAdmin'),
-               'last_access' => now(),
-           ]);
+        try {
+            $user = User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => Hash::make($request->input('password')),
+                'is_admin' => $request->input('isAdmin'),
+                'last_access' => now(),
+            ]);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'error' => true,
                 'message' => 'Error store a user',
@@ -60,6 +60,7 @@ class UserController extends Controller
 
     /**
      * Display the specified user.
+     *
      * @param User $user
      *
      * @return UserResource
@@ -74,11 +75,24 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $wasUpdated = $user->update($request->all());
+        try {
+            if ($request->input('password')) {
+                $this->_checkPassword($request->input('currentPassword'));
+            }
+            $wasUpdated = $user->update($request->all());
 
-        if($wasUpdated){
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Error current password not match',
+                'code' => 11300,
+                'details' => $e->getMessage()
+            ]);
+        }
+
+        if ($wasUpdated) {
             return response()->json();
-        }else{
+        } else {
             return response()->json([
                 'error' => true,
                 'message' => 'Error update a customer',
@@ -90,13 +104,14 @@ class UserController extends Controller
 
     /**
      * Remove the specified user from storage.
+     *
      * @param User $user
      *
      * @return JsonResponse
      */
     public function destroy(User $user): JsonResponse
     {
-        if($user->id === 1){
+        if ($user->id === 1) {
             return response()->json([
                 'error' => true,
                 'message' => 'Error Admin user can not delete',
@@ -107,9 +122,9 @@ class UserController extends Controller
 
         $wasDeleted = $user->delete();
 
-        if($wasDeleted){
+        if ($wasDeleted) {
             return response()->json();
-        }else{
+        } else {
             return response()->json([
                 'error' => true,
                 'message' => 'Error deleted a user',
@@ -118,4 +133,23 @@ class UserController extends Controller
             ]);
         }
     }
+
+    /**
+     * Validates that send password is the same a stored password
+     *
+     * @param string $password
+     *
+     * @return void
+     * @throws \Exception
+     */
+    private function _checkPassword(string $password): void
+    {
+        $user = Auth::user();
+
+        if (!Hash::check($password, $user->password)) {
+            throw new \Exception('Password not match');
+        }
+
+    }
+
 }

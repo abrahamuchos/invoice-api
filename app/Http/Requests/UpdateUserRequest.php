@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -24,15 +25,19 @@ class UpdateUserRequest extends FormRequest
         if($this->method() === 'PUT'){
             return [
                 'name' => 'required|min:2|max:65',
-                'email' => 'required|email|unique:users,email',
+                'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user()->id)],
                 'isAdmin' => 'required|boolean',
+                'password' => 'required|confirmed|min:6',
+                'currentPassword' => 'required|min:6'
             ];
 
         }else{
             return [
                 'name' => 'sometimes|min:2|max:65',
-                'email' => 'sometimes|email|unique:users,email',
+                'email' => ['sometimes', 'email', Rule::unique('users', 'email')->ignore($this->user()->id)],
                 'isAdmin' => 'sometimes|boolean',
+                'password' => 'sometimes|confirmed|min:6',
+                'currentPassword' => 'sometimes|min:6'
             ];
         }
     }
