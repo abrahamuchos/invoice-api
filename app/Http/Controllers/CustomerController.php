@@ -102,7 +102,7 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer): JsonResponse
     {
-        if(! Auth::user()->tokenCan('delete')){
+        if(!Auth::user()->tokenCan('delete')){
             return response()->json([], 401);
         }
 

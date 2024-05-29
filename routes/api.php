@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +26,15 @@ Route::group(['prefix' => 'v1'], function(){
     Route::post('login', [AuthController::class, 'login']);
 
     //Auth routes
-    Route::middleware('auth:sanctum', )->group(function(){
+    Route::middleware('auth:sanctum')->group(function(){
+
+        Route::get('users', [UserController::class, 'index'])->middleware('admin');
+        Route::get('users', [UserController::class, 'store'])->middleware('admin');
+        Route::get('users/{user}', [UserController::class, 'show']);
+        Route::put('users/{user}', [UserController::class, 'update']);
+        Route::patch('users/{user}', [UserController::class, 'update']);
+        Route::delete('users/{user}', [UserController::class, 'destroy'])->middleware('admin');
+
 
         Route::apiResource('customers', CustomerController::class);
 
