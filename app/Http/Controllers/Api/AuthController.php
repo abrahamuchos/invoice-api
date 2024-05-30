@@ -31,9 +31,9 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        if($user->is_admin){
+        if ($user->is_admin) {
             $token = $this->_createAdminToken($user);
-        }else{
+        } else {
             $token = $this->_createBasicToken($user);
         }
         $this->_updateLastAccess($user);
@@ -42,7 +42,8 @@ class AuthController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'token' => $token,
+            'token' => $token['token'],
+            'expiresAt' => $token['expires_at']
         ]);
     }
 
@@ -61,28 +62,41 @@ class AuthController extends Controller
 
     /**
      * Create token to admin user
+     *
      * @param User $user
      *
-     * @return string
+     * @return array<string>
      */
-    private function _createAdminToken(User $user): string
+    private function _createAdminToken(User $user): array
     {
-        return $user->createToken('admin-token', ['create', 'update', 'delete'])->plainTextToken;
+        $token = $user->createToken('admin-token', ['create', 'update', 'delete'], now()->addHours(2));
+
+        return [
+            'token' => $token->plainTextToken,
+            'expires_at' => $token->accessToken->expires_at
+        ];
     }
 
     /**
      * Create a basic user token
+     *
      * @param User $user
      *
-     * @return string
+     * @return array<string>
      */
-    private function _createBasicToken(User $user): string
+    private function _createBasicToken(User $user): array
     {
-        return $user->createToken('basic-token', ['create', 'update'])->plainTextToken;
+        $token = $user->createToken('basic-token', ['create', 'update'], now()->addHours(12));
+
+        return [
+            'token' => $token->plainTextToken,
+            'expires_at' => $token->accessToken->expires_at
+        ];
     }
 
     /**
      * Update user last access
+     *
      * @param User $user
      *
      * @return void
