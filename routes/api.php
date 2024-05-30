@@ -29,7 +29,7 @@ Route::group(['prefix' => 'v1'], function(){
     Route::middleware('auth:sanctum')->group(function(){
 
         Route::get('users', [UserController::class, 'index'])->middleware('admin');
-        Route::get('users', [UserController::class, 'store'])->middleware('admin');
+        Route::post('users', [UserController::class, 'store'])->middleware('admin');
         Route::get('users/{user}', [UserController::class, 'show']);
         Route::put('users/{user}', [UserController::class, 'update']);
         Route::patch('users/{user}', [UserController::class, 'update']);
