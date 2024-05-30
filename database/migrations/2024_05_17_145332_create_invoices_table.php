@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->integer('customer_id');
+            $table->foreignId('customer_id')->constrained('invoices')->onDelete('cascade');
+
             $table->integer('invoice_number')->unique();
             $table->string('uuid', 36)->unique();
             $table->float('amount');
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->dateTime('paid_dated')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
