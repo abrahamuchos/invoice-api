@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('postal_code', 15);
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

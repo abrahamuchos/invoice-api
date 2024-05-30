@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  *
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string                                                                  $postal_code
  * @property \Illuminate\Support\Carbon|null                                         $created_at
  * @property \Illuminate\Support\Carbon|null                                         $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
  * @property-read int|null                                                           $invoices_count
  * @method static \Database\Factories\CustomerFactory factory($count = null, $state = [])
@@ -37,11 +39,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Customer whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Customer whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Customer whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Customer onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Customer whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Customer withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Customer withoutTrashed()
  * @mixin \Eloquent
  */
 class Customer extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -53,6 +59,33 @@ class Customer extends Model
         'country',
         'postal_code',
     ];
+    protected static array $relationsToCascade = ['invoices'];
+
+    /**
+     * @return void
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        //Soft delete cascade
+        static::deleting(function ($resource){
+            foreach (static::$relationsToCascade as $relation){
+                foreach ($resource->{$relation}()->get() as $item){
+                    $item->delete();
+                }
+            }
+        });
+
+        //Soft delete cascade restore
+        static::restoring(function ($resource){
+            foreach (static::$relationsToCascade as $relation){
+                foreach ($resource->{$relation}()->withTrashed()->get() as $item){
+                    $item->restore();
+                }
+            }
+        });
+    }
 
     /**
      * @return HasMany
