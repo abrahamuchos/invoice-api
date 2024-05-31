@@ -1,0 +1,2182 @@
+{
+	"info": {
+		"_postman_id": "d8efea80-34d0-433d-b1d8-a5254fedb48c",
+		"name": "Invoice API",
+		"description": "API Rest for the control and registration of invoices, clients and users.\n\nDevelop with Laravel 10.48.10 (PHP ^8.1)\n\n_Considerations_\n\n- _Check Users into database can be change._\n    \n- _Admin email and password always is same._",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6168326"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"let token = response.token;",
+									"",
+									"pm.collectionVariables.set('auth_token', token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const basicUser = {",
+									"        \"email\":\"vweber@example.com\",",
+									"        \"password\":\"password\",",
+									"}",
+									"",
+									"const adminUser = {",
+									"    \"email\":\"admin@test.com\",",
+									"    \"password\":\"S3P2XE/V7R<v\",",
+									"}",
+									"",
+									"if(pm.collectionVariables.get('login_with_admin') === 'true'){",
+									"    pm.collectionVariables.set('body_user_login', JSON.stringify(adminUser))",
+									"",
+									"}else{",
+									"     pm.collectionVariables.set('body_user_login', JSON.stringify(basicUser))",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{body_user_login}}"
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Login users.\n\n_Considerations_\n\n- _Check Users into database can be change._\n- _Admin email and password always is same._"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/logout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"logout"
+							]
+						},
+						"description": "Log out user and detroy token."
+					},
+					"response": []
+				},
+				{
+					"name": "All Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/users?lastAccess[eq]=2024-05-30 16:16:57",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "perPage",
+									"value": "10",
+									"description": "Users per page",
+									"disabled": true
+								},
+								{
+									"key": "email[eq]",
+									"value": "qdeckow@example.com",
+									"description": "Email filter. Can be use: 'eq'",
+									"disabled": true
+								},
+								{
+									"key": "isAdmin[eq]",
+									"value": "0",
+									"description": "Is admin (boolean) filter. Can be use: 'eq'",
+									"disabled": true
+								},
+								{
+									"key": "lastAccess[eq]",
+									"value": "2024-05-30 16:16:57",
+									"description": "Last Access date filter. Can be use: 'eq', 'ne', 'lt', 'lte', 'gt', 'gte'"
+								},
+								{
+									"key": "createdAt[eq]",
+									"value": "2024-05-30 16:16:57",
+									"description": "Created at date filter  Can be use: 'eq', 'ne', 'lt', 'lte', 'gt', 'gte'",
+									"disabled": true
+								},
+								{
+									"key": "updatedAt[eq]",
+									"value": "2024-05-30 16:16:57",
+									"description": "Updated at date filter  Can be use: 'eq', 'ne', 'lt', 'lte', 'gt', 'gte'",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Retrive a complete list of registrered users."
+					},
+					"response": []
+				},
+				{
+					"name": "User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Jesus Antonio",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "jesus@test.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "isAdmin",
+									"value": "0",
+									"description": "boolean",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Create a new user."
+					},
+					"response": [
+						{
+							"name": "User",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "name",
+											"value": "Jesus Antonio",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "jesus@test.com",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "password",
+											"type": "text"
+										},
+										{
+											"key": "isAdmin",
+											"value": "0",
+											"description": "boolean",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/users",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.28"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 30 May 2024 20:10:25 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"name\": \"Jesus Antonio\",\n        \"email\": \"jesus@test.com\",\n        \"isAdmin\": \"0\",\n        \"lastAccess\": \"2024-05-30T20:10:25.865218Z\",\n        \"createdAt\": \"2024-05-30T20:10:25.000000Z\",\n        \"updatedAt\": \"2024-05-30T20:10:25.000000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "User By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/users/5",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"5"
+							]
+						},
+						"description": "Retrive user by id"
+					},
+					"response": [
+						{
+							"name": "User By Id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/users/5",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"5"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.28"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 30 May 2024 20:14:16 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"name\": \"Jordyn Reilly\",\n        \"email\": \"marian.okon@example.org\",\n        \"isAdmin\": false,\n        \"lastAccess\": \"2024-05-30 16:16:57\",\n        \"createdAt\": \"2024-05-30T16:16:57.000000Z\",\n        \"updatedAt\": \"2024-05-30T16:16:57.000000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "User By id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/users/10",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"10"
+							]
+						},
+						"description": "Delete user by id.  \n  \n_Only for admin user._"
+					},
+					"response": []
+				},
+				{
+					"name": "User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Mrs. Chloe Cummerata",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "vweber@example.com",
+									"type": "text"
+								},
+								{
+									"key": "isAdmin",
+									"value": "0",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "newPassword",
+									"type": "text"
+								},
+								{
+									"key": "password_confirmation",
+									"value": "newPassword",
+									"type": "text"
+								},
+								{
+									"key": "currentPassword",
+									"value": "password",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/users/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						},
+						"description": "Update user profile.\n\n_Only for the user themselves (not admin)._"
+					},
+					"response": []
+				},
+				{
+					"name": "User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Mrs. Chloe Cummerata",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "vweber@example.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "isAdmin",
+									"value": "0",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "password_confirmation",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "currentPassword",
+									"value": "newPassword",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/users/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						},
+						"description": "Update user profile.\n\n_Only for the user themselves (not admin)._"
+					},
+					"response": []
+				}
+			],
+			"description": "Users who use the application"
+		},
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "All Customers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/customers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customers"
+							]
+						},
+						"description": "Retrive a complete list of customers."
+					},
+					"response": [
+						{
+							"name": "All Customers",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/customers",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customers"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.28"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 30 May 2024 20:29:36 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Camille Hodkiewicz V\",\n            \"type\": \"I\",\n            \"email\": \"yparisian@gmail.com\",\n            \"address\": \"59181 Hugh Burg Suite 463\",\n            \"city\": \"South Nestormouth\",\n            \"state\": \"South Carolina\",\n            \"country\": \"Jamaica\",\n            \"postalCode\": \"50100-3504\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Cortney Powlowski\",\n            \"type\": \"I\",\n            \"email\": \"howe.kendrick@hotmail.com\",\n            \"address\": \"799 Trace Fork\",\n            \"city\": \"Lake Vada\",\n            \"state\": \"Virginia\",\n            \"country\": \"Zimbabwe\",\n            \"postalCode\": \"82568-0796\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Fausto Douglas\",\n            \"type\": \"I\",\n            \"email\": \"agleichner@fritsch.com\",\n            \"address\": \"955 Kulas Well\",\n            \"city\": \"Marianeland\",\n            \"state\": \"Colorado\",\n            \"country\": \"Tunisia\",\n            \"postalCode\": \"49698\"\n        },\n        {\n            \"id\": 4,\n            \"name\": \"Roob-Durgan\",\n            \"type\": \"B\",\n            \"email\": \"ryan.devin@renner.com\",\n            \"address\": \"38733 Abbott Flats Apt. 081\",\n            \"city\": \"South Marianamouth\",\n            \"state\": \"Washington\",\n            \"country\": \"Djibouti\",\n            \"postalCode\": \"40929\"\n        },\n        {\n            \"id\": 6,\n            \"name\": \"Dudley Predovic\",\n            \"type\": \"I\",\n            \"email\": \"serenity68@parisian.com\",\n            \"address\": \"1785 Madie Junctions\",\n            \"city\": \"Imanibury\",\n            \"state\": \"Nevada\",\n            \"country\": \"Korea\",\n            \"postalCode\": \"16630\"\n        },\n        {\n            \"id\": 7,\n            \"name\": \"Parisian, O'Hara and Kulas\",\n            \"type\": \"B\",\n            \"email\": \"sbecker@yahoo.com\",\n            \"address\": \"881 Joshua Crescent\",\n            \"city\": \"Kelliefort\",\n            \"state\": \"Nevada\",\n            \"country\": \"Serbia\",\n            \"postalCode\": \"74424-2847\"\n        },\n        {\n            \"id\": 8,\n            \"name\": \"Armstrong-Barrows\",\n            \"type\": \"B\",\n            \"email\": \"trycia94@rowe.com\",\n            \"address\": \"49311 Maxime Causeway\",\n            \"city\": \"Sigridborough\",\n            \"state\": \"Tennessee\",\n            \"country\": \"Niger\",\n            \"postalCode\": \"79880-6328\"\n        },\n        {\n            \"id\": 9,\n            \"name\": \"Predovic, Doyle and Turcotte\",\n            \"type\": \"B\",\n            \"email\": \"abagail45@rolfson.com\",\n            \"address\": \"133 Francisca Lock\",\n            \"city\": \"Lake Dorothyfort\",\n            \"state\": \"South Carolina\",\n            \"country\": \"Mayotte\",\n            \"postalCode\": \"10678-7943\"\n        },\n        {\n            \"id\": 10,\n            \"name\": \"Rohan, Dietrich and Hermann\",\n            \"type\": \"B\",\n            \"email\": \"francisca.price@thiel.net\",\n            \"address\": \"181 Schinner Parkways\",\n            \"city\": \"Earnestton\",\n            \"state\": \"Delaware\",\n            \"country\": \"Malta\",\n            \"postalCode\": \"90122\"\n        },\n        {\n            \"id\": 11,\n            \"name\": \"Medhurst, Balistreri and Zieme\",\n            \"type\": \"B\",\n            \"email\": \"blick.sally@sporer.org\",\n            \"address\": \"2688 Cielo Court\",\n            \"city\": \"Huelburgh\",\n            \"state\": \"Indiana\",\n            \"country\": \"Samoa\",\n            \"postalCode\": \"90388-0882\"\n        },\n        {\n            \"id\": 12,\n            \"name\": \"Dr. Dashawn Schimmel\",\n            \"type\": \"I\",\n            \"email\": \"gilda.mccullough@kuphal.biz\",\n            \"address\": \"50098 Morissette Cliff Apt. 287\",\n            \"city\": \"Soniabury\",\n            \"state\": \"Ohio\",\n            \"country\": \"Nauru\",\n            \"postalCode\": \"84736\"\n        },\n        {\n            \"id\": 13,\n            \"name\": \"Davis PLC\",\n            \"type\": \"B\",\n            \"email\": \"adell57@hotmail.com\",\n            \"address\": \"326 Dickinson Junction Apt. 910\",\n            \"city\": \"Moorefurt\",\n            \"state\": \"Massachusetts\",\n            \"country\": \"Bolivia\",\n            \"postalCode\": \"28581\"\n        },\n        {\n            \"id\": 14,\n            \"name\": \"Dr. Lempi Pacocha\",\n            \"type\": \"I\",\n            \"email\": \"gutmann.otho@bogan.com\",\n            \"address\": \"904 Hodkiewicz Port Suite 720\",\n            \"city\": \"Port Mabel\",\n            \"state\": \"Mississippi\",\n            \"country\": \"Mayotte\",\n            \"postalCode\": \"94851-0340\"\n        },\n        {\n            \"id\": 15,\n            \"name\": \"Cormier Group\",\n            \"type\": \"B\",\n            \"email\": \"keven.rohan@yahoo.com\",\n            \"address\": \"5540 Ledner Manor Suite 281\",\n            \"city\": \"New Brenda\",\n            \"state\": \"Texas\",\n            \"country\": \"Cook Islands\",\n            \"postalCode\": \"29206-3736\"\n        },\n        {\n            \"id\": 16,\n            \"name\": \"Schiller, Pollich and Hagenes\",\n            \"type\": \"B\",\n            \"email\": \"gislason.joanie@pouros.net\",\n            \"address\": \"338 Gleason Trace Apt. 239\",\n            \"city\": \"Elysehaven\",\n            \"state\": \"Utah\",\n            \"country\": \"San Marino\",\n            \"postalCode\": \"03792\"\n        }\n    ],\n    \"links\": {\n        \"first\": \"http://127.0.0.1:8000/api/v1/customers?page=1\",\n        \"last\": \"http://127.0.0.1:8000/api/v1/customers?page=13\",\n        \"prev\": null,\n        \"next\": \"http://127.0.0.1:8000/api/v1/customers?page=2\"\n    },\n    \"meta\": {\n        \"current_page\": 1,\n        \"from\": 1,\n        \"last_page\": 13,\n        \"links\": [\n            {\n                \"url\": null,\n                \"label\": \"&laquo; Previous\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=1\",\n                \"label\": \"1\",\n                \"active\": true\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=2\",\n                \"label\": \"2\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=3\",\n                \"label\": \"3\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=4\",\n                \"label\": \"4\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=5\",\n                \"label\": \"5\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=6\",\n                \"label\": \"6\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=7\",\n                \"label\": \"7\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=8\",\n                \"label\": \"8\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=9\",\n                \"label\": \"9\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=10\",\n                \"label\": \"10\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=11\",\n                \"label\": \"11\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=12\",\n                \"label\": \"12\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=13\",\n                \"label\": \"13\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?page=2\",\n                \"label\": \"Next &raquo;\",\n                \"active\": false\n            }\n        ],\n        \"path\": \"http://127.0.0.1:8000/api/v1/customers\",\n        \"per_page\": 15,\n        \"to\": 15,\n        \"total\": 182\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Customers By filter",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/customers?state[eq]=Washington",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customers"
+							],
+							"query": [
+								{
+									"key": "name[eq]",
+									"value": "Roob-Durgan",
+									"description": "Name filter. Can be use: eq",
+									"disabled": true
+								},
+								{
+									"key": "state[eq]",
+									"value": "Washington",
+									"description": "State filter. Can be use: eq"
+								},
+								{
+									"key": "type[eq]",
+									"value": null,
+									"description": "Type filter. Can be use: eq",
+									"disabled": true
+								},
+								{
+									"key": "email[eq]",
+									"value": "ryan.devin@renner.com",
+									"description": "Email filter. Can be use: eq",
+									"disabled": true
+								},
+								{
+									"key": "address[eq]",
+									"value": null,
+									"description": "Address filter. Can be use: eq",
+									"disabled": true
+								},
+								{
+									"key": "city[eq]",
+									"value": null,
+									"description": "City filter. Can be use: eq",
+									"disabled": true
+								},
+								{
+									"key": "state[eq]",
+									"value": null,
+									"description": "State filter. Can be use: eq",
+									"disabled": true
+								},
+								{
+									"key": "country[eq]",
+									"value": null,
+									"description": "Country filter. Can be use: eq",
+									"disabled": true
+								},
+								{
+									"key": "postalCode[eq]",
+									"value": null,
+									"description": "Postal code filter. Can be use: eq, gt, lt",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all customers by filters, and can add invoices"
+					},
+					"response": [
+						{
+							"name": "Customers By filter",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/customers?state[eq]=Washington",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customers"
+									],
+									"query": [
+										{
+											"key": "name[eq]",
+											"value": "Roob-Durgan",
+											"description": "Name filter. Can be use: eq",
+											"disabled": true
+										},
+										{
+											"key": "state[eq]",
+											"value": "Washington",
+											"description": "State filter. Can be use: eq"
+										},
+										{
+											"key": "type[eq]",
+											"value": null,
+											"description": "Type filter. Can be use: eq",
+											"disabled": true
+										},
+										{
+											"key": "email[eq]",
+											"value": "ryan.devin@renner.com",
+											"description": "Email filter. Can be use: eq",
+											"disabled": true
+										},
+										{
+											"key": "address[eq]",
+											"value": null,
+											"description": "Address filter. Can be use: eq",
+											"disabled": true
+										},
+										{
+											"key": "city[eq]",
+											"value": null,
+											"description": "City filter. Can be use: eq",
+											"disabled": true
+										},
+										{
+											"key": "state[eq]",
+											"value": null,
+											"description": "State filter. Can be use: eq",
+											"disabled": true
+										},
+										{
+											"key": "country[eq]",
+											"value": null,
+											"description": "Country filter. Can be use: eq",
+											"disabled": true
+										},
+										{
+											"key": "postalCode[eq]",
+											"value": null,
+											"description": "Postal code filter. Can be use: eq, gt, lt",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.28"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 30 May 2024 20:36:21 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "57"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 4,\n            \"name\": \"Roob-Durgan\",\n            \"type\": \"B\",\n            \"email\": \"ryan.devin@renner.com\",\n            \"address\": \"38733 Abbott Flats Apt. 081\",\n            \"city\": \"South Marianamouth\",\n            \"state\": \"Washington\",\n            \"country\": \"Djibouti\",\n            \"postalCode\": \"40929\"\n        },\n        {\n            \"id\": 31,\n            \"name\": \"Princess Keebler\",\n            \"type\": \"I\",\n            \"email\": \"casper.leanne@yahoo.com\",\n            \"address\": \"525 Sabina Passage\",\n            \"city\": \"Stephaniaberg\",\n            \"state\": \"Washington\",\n            \"country\": \"Jamaica\",\n            \"postalCode\": \"20297\"\n        },\n        {\n            \"id\": 46,\n            \"name\": \"Miss Daphnee Pfannerstill\",\n            \"type\": \"I\",\n            \"email\": \"mills.enos@gmail.com\",\n            \"address\": \"4390 Novella Island\",\n            \"city\": \"Rodriguezview\",\n            \"state\": \"Washington\",\n            \"country\": \"Armenia\",\n            \"postalCode\": \"13418\"\n        },\n        {\n            \"id\": 128,\n            \"name\": \"Sauer, Franecki and Heathcote\",\n            \"type\": \"B\",\n            \"email\": \"brooklyn.schuppe@hotmail.com\",\n            \"address\": \"99816 Mathias Meadows Suite 074\",\n            \"city\": \"North Tryciaton\",\n            \"state\": \"Washington\",\n            \"country\": \"Australia\",\n            \"postalCode\": \"98034-5984\"\n        },\n        {\n            \"id\": 132,\n            \"name\": \"Deborah Adams\",\n            \"type\": \"I\",\n            \"email\": \"kennedi.kessler@schulist.com\",\n            \"address\": \"2825 O'Conner Inlet Apt. 981\",\n            \"city\": \"Asaside\",\n            \"state\": \"Washington\",\n            \"country\": \"Serbia\",\n            \"postalCode\": \"08952-5462\"\n        }\n    ],\n    \"links\": {\n        \"first\": \"http://127.0.0.1:8000/api/v1/customers?state%5Beq%5D=Washington&page=1\",\n        \"last\": \"http://127.0.0.1:8000/api/v1/customers?state%5Beq%5D=Washington&page=1\",\n        \"prev\": null,\n        \"next\": null\n    },\n    \"meta\": {\n        \"current_page\": 1,\n        \"from\": 1,\n        \"last_page\": 1,\n        \"links\": [\n            {\n                \"url\": null,\n                \"label\": \"&laquo; Previous\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/customers?state%5Beq%5D=Washington&page=1\",\n                \"label\": \"1\",\n                \"active\": true\n            },\n            {\n                \"url\": null,\n                \"label\": \"Next &raquo;\",\n                \"active\": false\n            }\n        ],\n        \"path\": \"http://127.0.0.1:8000/api/v1/customers\",\n        \"per_page\": 15,\n        \"to\": 5,\n        \"total\": 5\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Customer By id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/customers/5?includeInvoices=true",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customers",
+								"5"
+							],
+							"query": [
+								{
+									"key": "includeInvoices",
+									"value": "true",
+									"description": "(Optional) customer relationship invoices"
+								}
+							]
+						},
+						"description": "Retrive customer by id. Can be added relationship with invoices."
+					},
+					"response": []
+				},
+				{
+					"name": "Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Abraham Gonzalez",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "I",
+									"description": "Type can be:  I or B",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "agonzalez@test.com",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "Urb. Nueva Casarapa",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Caracas",
+									"type": "text"
+								},
+								{
+									"key": "state",
+									"value": "Distrito capital",
+									"type": "text"
+								},
+								{
+									"key": "country",
+									"value": "Venezuela",
+									"type": "text"
+								},
+								{
+									"key": "postalCode",
+									"value": "1020",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/customers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customers"
+							]
+						},
+						"description": "Create a new customer."
+					},
+					"response": [
+						{
+							"name": "Customer",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Abraham Gonzalez,",
+											"type": "text"
+										},
+										{
+											"key": "type",
+											"value": "I",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "agonzalez@test.com",
+											"type": "text"
+										},
+										{
+											"key": "address",
+											"value": "Urb. Nueva Casarapa",
+											"type": "text"
+										},
+										{
+											"key": "city",
+											"value": "Caracas",
+											"type": "text"
+										},
+										{
+											"key": "state",
+											"value": "Distrito capital",
+											"type": "text"
+										},
+										{
+											"key": "country",
+											"value": "Venezuela",
+											"type": "text"
+										},
+										{
+											"key": "postalCode",
+											"value": "1020",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/customers",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customers"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.28"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 30 May 2024 20:39:40 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": 183,\n        \"name\": \"Abraham Gonzalez,\",\n        \"type\": \"I\",\n        \"email\": \"agonzalez@test.com\",\n        \"address\": \"Urb. Nueva Casarapa\",\n        \"city\": \"Caracas\",\n        \"state\": \"Distrito capital\",\n        \"country\": \"Venezuela\",\n        \"postalCode\": \"1020\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Abraham Perez",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "B",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "aperez@test.com",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "urb. nueva casarapa",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Guarenas",
+									"type": "text"
+								},
+								{
+									"key": "state",
+									"value": "Miranda",
+									"type": "text"
+								},
+								{
+									"key": "country",
+									"value": "Venezuela",
+									"type": "text"
+								},
+								{
+									"key": "postalCode",
+									"value": "1020",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/customers/183",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customers",
+								"183"
+							]
+						},
+						"description": "Update customer."
+					},
+					"response": []
+				},
+				{
+					"name": "Customer",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"warning": "This is a duplicate header and will be overridden by the Content-Type header generated by Postman.",
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Abraham Gonzalez",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "I",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "agonzalez@test.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "address",
+									"value": "Urb. Nueva Casarapa",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Caracas",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "state",
+									"value": "Distrito capital",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "country",
+									"value": "Venezuela",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "postalCode",
+									"value": "1020",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/customers/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customers",
+								"2"
+							]
+						},
+						"description": "Update a customer."
+					},
+					"response": []
+				},
+				{
+					"name": "Customer By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/customers\\5",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customers",
+								"5"
+							]
+						},
+						"description": "Delete customer by id."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invoices",
+			"item": [
+				{
+					"name": "All invoices",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/invoices",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"invoices"
+							]
+						},
+						"description": "Retrive a complete list of invoices."
+					},
+					"response": []
+				},
+				{
+					"name": "Invoices By filters",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/invoices?includeCustomer=true&amount[gt]=18",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"invoices"
+							],
+							"query": [
+								{
+									"key": "includeCustomer",
+									"value": "true"
+								},
+								{
+									"key": "customerId[eq]",
+									"value": "2",
+									"description": "Options: eq",
+									"disabled": true
+								},
+								{
+									"key": "invoiceNumber[eq]",
+									"value": "1269",
+									"description": "Options: eq",
+									"disabled": true
+								},
+								{
+									"key": "uuid[eq]",
+									"value": null,
+									"description": "Options: eq",
+									"disabled": true
+								},
+								{
+									"key": "amount[gt]",
+									"value": "18",
+									"description": "Options: eq, gt, lt, lte, gte"
+								},
+								{
+									"key": "status[eq]",
+									"value": null,
+									"description": "Options: eq, ne",
+									"disabled": true
+								},
+								{
+									"key": "billedDated[gt]",
+									"value": null,
+									"description": "Options: eq eq, gt, lt, lte, gte",
+									"disabled": true
+								},
+								{
+									"key": "paidDated[gt]",
+									"value": null,
+									"description": "Options: eq eq, gt, lt, lte, gte",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all invoices by filters, and can add customer."
+					},
+					"response": [
+						{
+							"name": "Invoices By filters",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/invoices?includeCustomer=true&amount[gt]=18",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"invoices"
+									],
+									"query": [
+										{
+											"key": "includeCustomer",
+											"value": "true"
+										},
+										{
+											"key": "customerId[eq]",
+											"value": "2",
+											"description": "Options: eq",
+											"disabled": true
+										},
+										{
+											"key": "invoiceNumber[eq]",
+											"value": "1269",
+											"description": "Options: eq",
+											"disabled": true
+										},
+										{
+											"key": "uuid[eq]",
+											"value": null,
+											"description": "Options: eq",
+											"disabled": true
+										},
+										{
+											"key": "amount[gt]",
+											"value": "18",
+											"description": "Options: eq, gt, lt, lte, gte"
+										},
+										{
+											"key": "status[eq]",
+											"value": null,
+											"description": "Options: eq, ne",
+											"disabled": true
+										},
+										{
+											"key": "billedDated[gt]",
+											"value": null,
+											"description": "Options: eq eq, gt, lt, lte, gte",
+											"disabled": true
+										},
+										{
+											"key": "paidDated[gt]",
+											"value": null,
+											"description": "Options: eq eq, gt, lt, lte, gte",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.28"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 30 May 2024 20:46:04 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"customerId\": 1,\n            \"invoiceNumber\": 9955,\n            \"uuid\": \"354fda15-f97d-3922-bb1e-ea40d94567a0\",\n            \"amount\": \"22.9\",\n            \"status\": \"P\",\n            \"billedDated\": \"2017-10-28 21:02:22\",\n            \"paidDated\": \"2018-04-14 05:22:13\",\n            \"createdAt\": \"2024-05-30T16:16:57.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:57.000000Z\",\n            \"customer\": {\n                \"id\": 1,\n                \"name\": \"Camille Hodkiewicz V\",\n                \"type\": \"I\",\n                \"email\": \"yparisian@gmail.com\",\n                \"address\": \"59181 Hugh Burg Suite 463\",\n                \"city\": \"South Nestormouth\",\n                \"state\": \"South Carolina\",\n                \"country\": \"Jamaica\",\n                \"postalCode\": \"50100-3504\"\n            }\n        },\n        {\n            \"id\": 2,\n            \"customerId\": 1,\n            \"invoiceNumber\": 9956,\n            \"uuid\": \"99f430c7-7249-3b3b-8d6f-f56675fdd2f4\",\n            \"amount\": \"24\",\n            \"status\": \"P\",\n            \"billedDated\": \"2016-05-21 00:37:48\",\n            \"paidDated\": \"2024-02-07 06:02:08\",\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 1,\n                \"name\": \"Camille Hodkiewicz V\",\n                \"type\": \"I\",\n                \"email\": \"yparisian@gmail.com\",\n                \"address\": \"59181 Hugh Burg Suite 463\",\n                \"city\": \"South Nestormouth\",\n                \"state\": \"South Carolina\",\n                \"country\": \"Jamaica\",\n                \"postalCode\": \"50100-3504\"\n            }\n        },\n        {\n            \"id\": 3,\n            \"customerId\": 1,\n            \"invoiceNumber\": 9957,\n            \"uuid\": \"e684553a-8449-3bdb-ac8e-6f06b80ec158\",\n            \"amount\": \"19\",\n            \"status\": \"B\",\n            \"billedDated\": \"2016-08-05 19:59:39\",\n            \"paidDated\": null,\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 1,\n                \"name\": \"Camille Hodkiewicz V\",\n                \"type\": \"I\",\n                \"email\": \"yparisian@gmail.com\",\n                \"address\": \"59181 Hugh Burg Suite 463\",\n                \"city\": \"South Nestormouth\",\n                \"state\": \"South Carolina\",\n                \"country\": \"Jamaica\",\n                \"postalCode\": \"50100-3504\"\n            }\n        },\n        {\n            \"id\": 5,\n            \"customerId\": 1,\n            \"invoiceNumber\": 9959,\n            \"uuid\": \"2e10d5c6-075a-3fd5-86f7-a0a1b7a64b0e\",\n            \"amount\": \"20.4\",\n            \"status\": \"B\",\n            \"billedDated\": \"2016-06-06 06:17:29\",\n            \"paidDated\": null,\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 1,\n                \"name\": \"Camille Hodkiewicz V\",\n                \"type\": \"I\",\n                \"email\": \"yparisian@gmail.com\",\n                \"address\": \"59181 Hugh Burg Suite 463\",\n                \"city\": \"South Nestormouth\",\n                \"state\": \"South Carolina\",\n                \"country\": \"Jamaica\",\n                \"postalCode\": \"50100-3504\"\n            }\n        },\n        {\n            \"id\": 7,\n            \"customerId\": 1,\n            \"invoiceNumber\": 9961,\n            \"uuid\": \"7bae6a8a-5f18-31c4-9c7d-831cbd7d0e6c\",\n            \"amount\": \"18.3\",\n            \"status\": \"P\",\n            \"billedDated\": \"2016-06-20 09:31:17\",\n            \"paidDated\": \"2019-07-28 20:50:48\",\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 1,\n                \"name\": \"Camille Hodkiewicz V\",\n                \"type\": \"I\",\n                \"email\": \"yparisian@gmail.com\",\n                \"address\": \"59181 Hugh Burg Suite 463\",\n                \"city\": \"South Nestormouth\",\n                \"state\": \"South Carolina\",\n                \"country\": \"Jamaica\",\n                \"postalCode\": \"50100-3504\"\n            }\n        },\n        {\n            \"id\": 8,\n            \"customerId\": 1,\n            \"invoiceNumber\": 9962,\n            \"uuid\": \"75b40a64-b553-3eee-8267-622725ac978b\",\n            \"amount\": \"19.9\",\n            \"status\": \"P\",\n            \"billedDated\": \"2016-05-02 13:56:34\",\n            \"paidDated\": \"2020-05-20 09:32:59\",\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 1,\n                \"name\": \"Camille Hodkiewicz V\",\n                \"type\": \"I\",\n                \"email\": \"yparisian@gmail.com\",\n                \"address\": \"59181 Hugh Burg Suite 463\",\n                \"city\": \"South Nestormouth\",\n                \"state\": \"South Carolina\",\n                \"country\": \"Jamaica\",\n                \"postalCode\": \"50100-3504\"\n            }\n        },\n        {\n            \"id\": 13,\n            \"customerId\": 2,\n            \"invoiceNumber\": 9967,\n            \"uuid\": \"ebdd5930-25a8-307c-825b-4f494d7740b3\",\n            \"amount\": \"18.2\",\n            \"status\": \"V\",\n            \"billedDated\": \"2021-06-23 21:52:31\",\n            \"paidDated\": null,\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 2,\n                \"name\": \"Cortney Powlowski\",\n                \"type\": \"I\",\n                \"email\": \"howe.kendrick@hotmail.com\",\n                \"address\": \"799 Trace Fork\",\n                \"city\": \"Lake Vada\",\n                \"state\": \"Virginia\",\n                \"country\": \"Zimbabwe\",\n                \"postalCode\": \"82568-0796\"\n            }\n        },\n        {\n            \"id\": 17,\n            \"customerId\": 2,\n            \"invoiceNumber\": 9971,\n            \"uuid\": \"272140b4-aaa1-3ee2-a2a0-03586bf1075d\",\n            \"amount\": \"23.6\",\n            \"status\": \"V\",\n            \"billedDated\": \"2015-05-05 10:10:25\",\n            \"paidDated\": null,\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 2,\n                \"name\": \"Cortney Powlowski\",\n                \"type\": \"I\",\n                \"email\": \"howe.kendrick@hotmail.com\",\n                \"address\": \"799 Trace Fork\",\n                \"city\": \"Lake Vada\",\n                \"state\": \"Virginia\",\n                \"country\": \"Zimbabwe\",\n                \"postalCode\": \"82568-0796\"\n            }\n        },\n        {\n            \"id\": 22,\n            \"customerId\": 3,\n            \"invoiceNumber\": 9976,\n            \"uuid\": \"05a06a0b-2a78-33c7-8d89-77570b99e981\",\n            \"amount\": \"21.8\",\n            \"status\": \"V\",\n            \"billedDated\": \"2023-02-06 10:58:38\",\n            \"paidDated\": null,\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 3,\n                \"name\": \"Fausto Douglas\",\n                \"type\": \"I\",\n                \"email\": \"agleichner@fritsch.com\",\n                \"address\": \"955 Kulas Well\",\n                \"city\": \"Marianeland\",\n                \"state\": \"Colorado\",\n                \"country\": \"Tunisia\",\n                \"postalCode\": \"49698\"\n            }\n        },\n        {\n            \"id\": 23,\n            \"customerId\": 3,\n            \"invoiceNumber\": 9977,\n            \"uuid\": \"842670ab-a00a-3bba-bbed-4a8b13fa6510\",\n            \"amount\": \"20.2\",\n            \"status\": \"B\",\n            \"billedDated\": \"2022-09-08 07:05:13\",\n            \"paidDated\": null,\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 3,\n                \"name\": \"Fausto Douglas\",\n                \"type\": \"I\",\n                \"email\": \"agleichner@fritsch.com\",\n                \"address\": \"955 Kulas Well\",\n                \"city\": \"Marianeland\",\n                \"state\": \"Colorado\",\n                \"country\": \"Tunisia\",\n                \"postalCode\": \"49698\"\n            }\n        },\n        {\n            \"id\": 24,\n            \"customerId\": 3,\n            \"invoiceNumber\": 9978,\n            \"uuid\": \"04e03589-0d56-34ed-8b93-c444ca818396\",\n            \"amount\": \"21.8\",\n            \"status\": \"V\",\n            \"billedDated\": \"2017-05-17 07:35:33\",\n            \"paidDated\": null,\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 3,\n                \"name\": \"Fausto Douglas\",\n                \"type\": \"I\",\n                \"email\": \"agleichner@fritsch.com\",\n                \"address\": \"955 Kulas Well\",\n                \"city\": \"Marianeland\",\n                \"state\": \"Colorado\",\n                \"country\": \"Tunisia\",\n                \"postalCode\": \"49698\"\n            }\n        },\n        {\n            \"id\": 25,\n            \"customerId\": 3,\n            \"invoiceNumber\": 9979,\n            \"uuid\": \"86e67112-06ba-338c-a268-22858b872050\",\n            \"amount\": \"18.9\",\n            \"status\": \"B\",\n            \"billedDated\": \"2023-08-13 14:36:54\",\n            \"paidDated\": null,\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 3,\n                \"name\": \"Fausto Douglas\",\n                \"type\": \"I\",\n                \"email\": \"agleichner@fritsch.com\",\n                \"address\": \"955 Kulas Well\",\n                \"city\": \"Marianeland\",\n                \"state\": \"Colorado\",\n                \"country\": \"Tunisia\",\n                \"postalCode\": \"49698\"\n            }\n        },\n        {\n            \"id\": 26,\n            \"customerId\": 3,\n            \"invoiceNumber\": 9980,\n            \"uuid\": \"3a7eb8b3-7d7f-37c3-823e-899f3377d4bf\",\n            \"amount\": \"21.7\",\n            \"status\": \"V\",\n            \"billedDated\": \"2020-07-18 04:42:02\",\n            \"paidDated\": null,\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 3,\n                \"name\": \"Fausto Douglas\",\n                \"type\": \"I\",\n                \"email\": \"agleichner@fritsch.com\",\n                \"address\": \"955 Kulas Well\",\n                \"city\": \"Marianeland\",\n                \"state\": \"Colorado\",\n                \"country\": \"Tunisia\",\n                \"postalCode\": \"49698\"\n            }\n        },\n        {\n            \"id\": 29,\n            \"customerId\": 4,\n            \"invoiceNumber\": 9983,\n            \"uuid\": \"0f56294a-9788-3944-8607-f6d4fabd4d69\",\n            \"amount\": \"22.1\",\n            \"status\": \"V\",\n            \"billedDated\": \"2014-07-06 21:49:07\",\n            \"paidDated\": null,\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 4,\n                \"name\": \"Roob-Durgan\",\n                \"type\": \"B\",\n                \"email\": \"ryan.devin@renner.com\",\n                \"address\": \"38733 Abbott Flats Apt. 081\",\n                \"city\": \"South Marianamouth\",\n                \"state\": \"Washington\",\n                \"country\": \"Djibouti\",\n                \"postalCode\": \"40929\"\n            }\n        },\n        {\n            \"id\": 30,\n            \"customerId\": 4,\n            \"invoiceNumber\": 9984,\n            \"uuid\": \"6dbf9d14-8319-3ea0-86bd-a2afb69feae2\",\n            \"amount\": \"23.2\",\n            \"status\": \"P\",\n            \"billedDated\": \"2021-11-19 07:33:56\",\n            \"paidDated\": \"2017-12-04 01:22:21\",\n            \"createdAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"updatedAt\": \"2024-05-30T16:16:58.000000Z\",\n            \"customer\": {\n                \"id\": 4,\n                \"name\": \"Roob-Durgan\",\n                \"type\": \"B\",\n                \"email\": \"ryan.devin@renner.com\",\n                \"address\": \"38733 Abbott Flats Apt. 081\",\n                \"city\": \"South Marianamouth\",\n                \"state\": \"Washington\",\n                \"country\": \"Djibouti\",\n                \"postalCode\": \"40929\"\n            }\n        }\n    ],\n    \"links\": {\n        \"first\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=1\",\n        \"last\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=33\",\n        \"prev\": null,\n        \"next\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=2\"\n    },\n    \"meta\": {\n        \"current_page\": 1,\n        \"from\": 1,\n        \"last_page\": 33,\n        \"links\": [\n            {\n                \"url\": null,\n                \"label\": \"&laquo; Previous\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=1\",\n                \"label\": \"1\",\n                \"active\": true\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=2\",\n                \"label\": \"2\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=3\",\n                \"label\": \"3\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=4\",\n                \"label\": \"4\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=5\",\n                \"label\": \"5\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=6\",\n                \"label\": \"6\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=7\",\n                \"label\": \"7\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=8\",\n                \"label\": \"8\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=9\",\n                \"label\": \"9\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=10\",\n                \"label\": \"10\",\n                \"active\": false\n            },\n            {\n                \"url\": null,\n                \"label\": \"...\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=32\",\n                \"label\": \"32\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=33\",\n                \"label\": \"33\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/v1/invoices?includeCustomer=true&amount%5Bgt%5D=18&page=2\",\n                \"label\": \"Next &raquo;\",\n                \"active\": false\n            }\n        ],\n        \"path\": \"http://127.0.0.1:8000/api/v1/invoices\",\n        \"per_page\": 15,\n        \"to\": 15,\n        \"total\": 484\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Invoice By id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/invoices/4?includeCustomer=true",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"invoices",
+								"4"
+							],
+							"query": [
+								{
+									"key": "includeCustomer",
+									"value": "true",
+									"description": "(Optional) Invoice relationship with customer"
+								}
+							]
+						},
+						"description": "Retrive invoice by id and can be added relationships with customer."
+					},
+					"response": []
+				},
+				{
+					"name": "Invoice",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "customerId",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "201",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "V",
+									"type": "text"
+								},
+								{
+									"key": "billedDated",
+									"value": "2024-05-27 20:03:01",
+									"type": "text"
+								},
+								{
+									"key": "paidDated",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/invoices",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"invoices"
+							]
+						},
+						"description": "Creata a new invoice."
+					},
+					"response": [
+						{
+							"name": "Invoice",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "customerId",
+											"value": "2",
+											"type": "text"
+										},
+										{
+											"key": "amount",
+											"value": "201",
+											"type": "text"
+										},
+										{
+											"key": "status",
+											"value": "V",
+											"type": "text"
+										},
+										{
+											"key": "billedDated",
+											"value": "2024-05-27 20:03:01",
+											"type": "text"
+										},
+										{
+											"key": "paidDated",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/invoices",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"invoices"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.28"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 30 May 2024 20:49:26 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": 1085,\n        \"customerId\": \"2\",\n        \"invoiceNumber\": 11039,\n        \"uuid\": \"8b160539-a88c-4281-8563-849865dac72b\",\n        \"amount\": \"201\",\n        \"status\": \"V\",\n        \"billedDated\": \"2024-05-27 20:03:01\",\n        \"paidDated\": null,\n        \"createdAt\": \"2024-05-30T20:49:26.000000Z\",\n        \"updatedAt\": \"2024-05-30T20:49:26.000000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Invoice",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "customerId",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "210.4",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "V",
+									"type": "text"
+								},
+								{
+									"key": "billedDated",
+									"value": "2024-05-27 20:03:01",
+									"type": "text"
+								},
+								{
+									"key": "paidDated",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/invoices/10",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"invoices",
+								"10"
+							]
+						},
+						"description": "Update an invoice."
+					},
+					"response": []
+				},
+				{
+					"name": "Invoice",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "customerId",
+									"value": "2",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "amount",
+									"value": "210.4",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "P",
+									"type": "text"
+								},
+								{
+									"key": "billedDated",
+									"value": "2024-05-27 20:03:01",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "paidDated",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/invoices/10",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"invoices",
+								"10"
+							]
+						},
+						"description": "Update an invoice."
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk invoices",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n   {\n       \"customerId\": 182,\n        \"amount\": \"1\",\n        \"status\": \"V\",\n        \"billedDated\": \"2024-05-20 19:30:11\",\n        \"paidDated\": null\n   },\n    {\n        \"customerId\":182,\n        \"amount\": \"11\",\n        \"status\": \"V\",\n        \"billedDated\": \"2024-05-22 05:13:05\",\n        \"paidDated\": null\n   },\n    {\n        \"customerId\": 182,\n        \"amount\": \"21.40\",\n        \"status\": \"P\",\n        \"billedDated\": \"2024-05-27 15:22:28\",\n        \"paidDated\": \"2024-05-27 20:03:05\"\n   }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/invoices/bulk",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"invoices",
+								"bulk"
+							]
+						},
+						"description": "Create a multiple invoices.  \n  \n_Only for admin user._"
+					},
+					"response": []
+				},
+				{
+					"name": "Invoice By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/invoices/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"invoices",
+								"2"
+							]
+						},
+						"description": "Delete an invoice.  \n  \n_Only for admin user._"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://127.0.0.1:8000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "login_with_admin",
+			"value": "true",
+			"type": "string"
+		},
+		{
+			"key": "body_user_login",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
