@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DeleteException;
+use App\Exceptions\Invitation\InvitationExpiredException;
+use App\Exceptions\StoreException;
+use App\Exceptions\UpdateException;
+use App\Exceptions\User\CurrentPasswordNotMatchException;
+use App\Exceptions\User\DeleteAdminException;
 use App\Filters\UserFilter;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -33,26 +39,28 @@ class UserController extends Controller
      *
      * @param StoreUserRequest $request
      *
-     * @return UserResource|JsonResponse
+     * @return UserResource
      */
     public function store(StoreUserRequest $request): UserResource|JsonResponse
     {
         try {
+            $invitation = InvitationController::isValid($request->email, $request->token);
+
             $user = User::create([
                 'name' => $request->input('name'),
-                'email' => $request->input('email'),
+                'email' => $invitation->email,
                 'password' => Hash::make($request->input('password')),
-                'is_admin' => $request->input('isAdmin'),
+                'is_admin' => $invitation->is_admin,
                 'last_access' => now(),
             ]);
 
+        } catch (InvitationExpiredException $e) {
+            return $e->render();
+
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Error store a user',
-                'code' => 11100,
-                'details' => $e->getMessage()
-            ]);
+            $storeException = new StoreException();
+            return $storeException->render();
+
         }
 
         return new UserResource($user);
@@ -71,7 +79,11 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @param UpdateUserRequest $request
+     * @param User              $user
+     *
+     * @return JsonResponse
+     * @throws \Exception
      */
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
@@ -81,24 +93,17 @@ class UserController extends Controller
             }
             $wasUpdated = $user->update($request->all());
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Error current password not match',
-                'code' => 11300,
-                'details' => $e->getMessage()
-            ]);
+        } catch (CurrentPasswordNotMatchException $e) {
+            return $e->render();
         }
 
+
         if ($wasUpdated) {
-            return response()->json();
+            $updateException = new UpdateException();
+            return $updateException->render();
+
         } else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Error update a customer',
-                'code' => 11200,
-                'details' => null
-            ]);
+            return response()->json([], 201);
         }
     }
 
@@ -112,12 +117,8 @@ class UserController extends Controller
     public function destroy(User $user): JsonResponse
     {
         if ($user->id === 1) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Error Admin user can not delete',
-                'code' => 10201,
-                'details' => null
-            ], 423);
+            $deleteAdminException = new DeleteAdminException();
+            return $deleteAdminException->render();
         }
 
         $wasDeleted = $user->delete();
@@ -125,12 +126,8 @@ class UserController extends Controller
         if ($wasDeleted) {
             return response()->json();
         } else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Error deleted a user',
-                'code' => 10200,
-                'details' => null
-            ]);
+            $deleteException = new DeleteException();
+            return $deleteException->render();
         }
     }
 
@@ -147,7 +144,7 @@ class UserController extends Controller
         $user = Auth::user();
 
         if (!Hash::check($password, $user->password)) {
-            throw new \Exception('Password not match');
+            throw new CurrentPasswordNotMatchException();
         }
 
     }
