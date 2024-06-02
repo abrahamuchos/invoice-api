@@ -5,13 +5,10 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * @property string $name
  * @property string $email
- * @property string $password
- * @property string $isAdmin
- * @property string $token - Token invitation
+ * @property bool   $isAdmin
  */
-class StoreUserRequest extends FormRequest
+class StoreInvitationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,20 +26,17 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:2|max:65',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|confirmed|min:2|max:100',
-            'token' => 'required|string'
+            'isAdmin' => 'boolean',
         ];
     }
 
-    /**
-     * @return void
-     */
-    protected function prepareForValidation(): void
+    protected function prepareForValidation()
     {
-        $this->merge([
-            'is_admin' => 'isAdmin'
-        ]);
+        if($this->isAdmin){
+            return [
+                'is_admin' => $this->isAdmin,
+            ];
+        }
     }
 }
