@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DeleteException;
+use App\Exceptions\StoreException;
+use App\Exceptions\UpdateException;
 use App\Filters\InvoiceFilter;
 use App\Http\Requests\BulkStoreRequest;
 use App\Http\Requests\StoreInvoiceRequest;
@@ -9,7 +12,6 @@ use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Resources\InvoiceCollection;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -61,12 +63,8 @@ class InvoiceController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Error store a invoice',
-                'code' => 10101,
-                'details' => $e->getMessage()
-            ]);
+            $storeException = new StoreException();
+            return $storeException->render();
         }
 
         return new InvoiceResource($invoice);
@@ -84,28 +82,14 @@ class InvoiceController extends Controller
             $arr['uuid'] = (string)\Str::uuid();
             return Arr::except($arr, ['customerId', 'billedDated', 'paidDated']);
         });
+        $wasInserted = Invoice::insert($bulk->toArray());
 
-        try {
-            $wasInserted = Invoice::insert($bulk->toArray());
-
-        }catch (QueryException $e){
-            return response()->json([
-                'error' => true,
-                'message' => 'Query Error insert a massive data (invoice)',
-                'code' => 10104,
-                'details' => $e->getMessage()
-            ]);
-        }
 
         if ($wasInserted) {
             return response()->json();
         } else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Error insert a massive data (invoice)',
-                'code' => 10103,
-                'details' => null
-            ]);
+            $storeException = new StoreException();
+            return $storeException->render();
         }
     }
 
@@ -138,14 +122,11 @@ class InvoiceController extends Controller
         $wasUpdated = $invoice->update($request->all());
 
         if ($wasUpdated) {
-            return response()->json();
+            $updateException = new UpdateException();
+            return $updateException->render();
+
         } else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Error update a invoice',
-                'code' => 10201,
-                'details' => null
-            ]);
+            return response()->json([], 201);
         }
     }
 
@@ -158,7 +139,7 @@ class InvoiceController extends Controller
      */
     public function destroy(Invoice $invoice): JsonResponse
     {
-        if(!Auth::user()->tokenCan('delete')){
+        if (!Auth::user()->tokenCan('delete')) {
             return response()->json([], 401);
         }
 
@@ -167,12 +148,8 @@ class InvoiceController extends Controller
         if ($wasDeleted) {
             return response()->json();
         } else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Error deleted a invoice',
-                'code' => 10201,
-                'details' => null
-            ]);
+            $deleteException = new DeleteException();
+            return $deleteException->render();
         }
     }
 

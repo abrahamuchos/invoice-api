@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DeleteException;
+use App\Exceptions\StoreException;
+use App\Exceptions\UpdateException;
 use App\Filters\CustomerFilter;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
@@ -45,12 +48,8 @@ class CustomerController extends Controller
             $customer = Customer::create($request->all());
 
         } catch (\Exception $e){
-            return response()->json([
-                'error' => true,
-                'message' => 'Error store a customer',
-                'code' => 10100,
-                'details' => $e->getMessage()
-            ]);
+            $storeException = new StoreException();
+            return $storeException->render();
         }
 
         return new CustomerResource($customer);
@@ -85,12 +84,8 @@ class CustomerController extends Controller
        if($wasUpdated){
            return response()->json();
        }else{
-           return response()->json([
-               'error' => true,
-               'message' => 'Error update a customer',
-               'code' => 10200,
-               'details' => null
-           ]);
+           $updateException = new UpdateException();
+           return $updateException->render();
        }
     }
 
@@ -106,17 +101,13 @@ class CustomerController extends Controller
             return response()->json([], 401);
         }
 
-        $wasDeleted =  $customer->delete();
+        $wasDeleted = $customer->delete();
 
-        if($wasDeleted){
+        if ($wasDeleted) {
             return response()->json();
-        }else{
-            return response()->json([
-                'error' => true,
-                'message' => 'Error deleted a customer',
-                'code' => 10200,
-                'details' => null
-            ]);
+        } else {
+            $deleteException = new DeleteException();
+            return $deleteException->render();
         }
     }
 }
