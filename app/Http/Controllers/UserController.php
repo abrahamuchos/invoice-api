@@ -99,11 +99,12 @@ class UserController extends Controller
 
 
         if ($wasUpdated) {
+            return response()->json([], 201);
+
+        } else {
             $updateException = new UpdateException();
             return $updateException->render();
 
-        } else {
-            return response()->json([], 201);
         }
     }
 
