@@ -63,8 +63,8 @@ class InvoiceController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            $storeException = new StoreException();
-            return $storeException->render();
+            $storeException = new StoreException('Invoice could not be saved', 10104);
+            return $storeException->render($e->getMessage());
         }
 
         return new InvoiceResource($invoice);
@@ -88,7 +88,7 @@ class InvoiceController extends Controller
         if ($wasInserted) {
             return response()->json();
         } else {
-            $storeException = new StoreException();
+            $storeException = new StoreException('Invoices could not be saved', 10114);
             return $storeException->render();
         }
     }
@@ -121,12 +121,14 @@ class InvoiceController extends Controller
     {
         $wasUpdated = $invoice->update($request->all());
 
+
         if ($wasUpdated) {
-            $updateException = new UpdateException();
-            return $updateException->render();
+            return response()->json([], 201);
 
         } else {
-            return response()->json([], 201);
+            $updateException = new UpdateException('Invoice could not be updated', 10204);
+            return $updateException->render(null, 'Please check ID invoice and try again');
+
         }
     }
 
@@ -148,7 +150,7 @@ class InvoiceController extends Controller
         if ($wasDeleted) {
             return response()->json();
         } else {
-            $deleteException = new DeleteException();
+            $deleteException = new DeleteException('Invoice could not be deleted', 10104);
             return $deleteException->render();
         }
     }

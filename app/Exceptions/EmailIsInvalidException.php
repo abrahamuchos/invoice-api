@@ -6,23 +6,23 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
-class SendEmailException extends Exception
+class EmailIsInvalidException extends Exception
 {
-    protected $code = 11500;
-    public int $status = 500;
+    protected $code = 15100;
+    public int $status = 422;
 
     public function render(): JsonResponse
     {
         return response()->json([
-            "status" => "error",
+            "status" => "success",
             "statusCode" => $this->status,
             "error" => [
                 "code" => $this->code,
-                "message" => "Send mail was not possible",
-                "details" => "Send mail was not possible, contact with admin.",
+                "message" => "Email is invalid",
+                "details" => "Email you sent is not registered in our system.",
                 "timestamp" => now(),
                 "path" => Route::current()->uri,
-                "suggestion" => "Send mail was not possible check connection and try again"
+                "suggestion" => "Email you sent is not registered in our system. Please confirm and try again."
             ],
             "documentation_url" => env('APP_FRONTEND_URL').'/docs/errors'
         ], $this->status);

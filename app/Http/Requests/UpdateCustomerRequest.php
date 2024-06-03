@@ -23,11 +23,17 @@ class UpdateCustomerRequest extends FormRequest
      */
     public function rules(): array
     {
+        $customerId = $this->route('customer')->id;
+
         if ($this->method() == 'PUT') {
             return [
                 'name' => 'required',
                 'type' => ['required', Rule::in(['I', 'B', 'i', 'b'])],
-                'email' => 'required|email|unique:customers,email',
+                'email' => [
+                    'required',
+                    'email',
+                    Rule::unique('customers', 'email')->ignore($customerId)
+                ],
                 'address' => 'required|max:255',
                 'city' => 'required|max:65',
                 'state' => 'required|max:65',
@@ -38,7 +44,11 @@ class UpdateCustomerRequest extends FormRequest
             return [
                 'name' => 'sometimes',
                 'type' => ['sometimes', Rule::in(['I', 'B', 'i', 'b'])],
-                'email' => 'sometimes|email|unique:customers,email',
+                'email' => [
+                    'sometimes',
+                    'email',
+                    Rule::unique('customers', 'email')->ignore($customerId)
+                ],
                 'address' => 'sometimes|max:255',
                 'city' => 'sometimes|max:65',
                 'state' => 'sometimes|max:65',

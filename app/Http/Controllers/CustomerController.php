@@ -48,8 +48,8 @@ class CustomerController extends Controller
             $customer = Customer::create($request->all());
 
         } catch (\Exception $e){
-            $storeException = new StoreException();
-            return $storeException->render();
+            $storeException = new StoreException('Customer could not be saved', 10103);
+            return $storeException->render($e->getMessage());
         }
 
         return new CustomerResource($customer);
@@ -82,10 +82,10 @@ class CustomerController extends Controller
        $wasUpdated = $customer->update($request->all());
 
        if($wasUpdated){
-           return response()->json();
+           return response()->json([], 201);
        }else{
-           $updateException = new UpdateException();
-           return $updateException->render();
+           $updateException = new UpdateException('Customer could not be updated', 10203);
+           return $updateException->render(null, 'Please check ID customer and try again');
        }
     }
 
@@ -106,7 +106,7 @@ class CustomerController extends Controller
         if ($wasDeleted) {
             return response()->json();
         } else {
-            $deleteException = new DeleteException();
+            $deleteException = new DeleteException('Customer could not be deleted', 10103);
             return $deleteException->render();
         }
     }
