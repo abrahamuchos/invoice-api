@@ -164,6 +164,3 @@ class InvoiceController extends Controller
         return DB::select("select nextval('invoice_number_seq')")[0]->nextval;
     }
 }
-
-
-
