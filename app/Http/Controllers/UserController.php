@@ -99,11 +99,12 @@ class UserController extends Controller
 
 
         if ($wasUpdated) {
-            $updateException = new UpdateException();
-            return $updateException->render();
+            return response()->json([], 201);
 
         } else {
-            return response()->json([], 201);
+            $updateException = new UpdateException('User could not be updated', 10202);
+            return $updateException->render();
+
         }
     }
 
